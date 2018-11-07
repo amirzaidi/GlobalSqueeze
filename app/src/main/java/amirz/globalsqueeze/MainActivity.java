@@ -2,11 +2,6 @@ package amirz.globalsqueeze;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Range;
-
-import com.paramsen.noise.Noise;
-import com.paramsen.noise.NoiseOptimized;
 
 import static amirz.globalsqueeze.Utilities.SAMPLES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE;
@@ -29,11 +24,13 @@ public class MainActivity extends Activity {
                 visualizer.invalidate();
             }
         }, SAMPLES);
+
+        mTracker.setEnabled(true);
     }
 
     @Override
     protected void onDestroy() {
-        mTracker.close();
+        mTracker.setEnabled(false);
         mTracker = null;
 
         super.onDestroy();

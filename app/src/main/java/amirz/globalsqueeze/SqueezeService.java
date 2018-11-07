@@ -1,10 +1,13 @@
 package amirz.globalsqueeze;
 
+import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -32,12 +35,24 @@ public class SqueezeService extends Service {
     private MotionTracker mTracker;
     private long mLastLaunch;
 
+    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            KeyguardManager km = context.getSystemService(KeyguardManager.class);
+            boolean enabled = !km.inKeyguardRestrictedInputMode();
+
+            Log.e(TAG, "Changing state to " + enabled);
+            mTracker.setEnabled(enabled);
+        }
+    };
+
     public SqueezeService() {
     }
 
     @Override
     public void onCreate() {
         Log.e(TAG, "onCreate");
+        super.onCreate();
 
         if (ATLEAST_OREO) {
             NotificationChannel channel = new NotificationChannel(
@@ -56,7 +71,13 @@ public class SqueezeService extends Service {
             }
         }, SAMPLES);
 
-        super.onCreate();
+        // Handle screen lock
+        mScreenStateReceiver.onReceive(this, null);
+        IntentFilter lockFilter = new IntentFilter();
+        lockFilter.addAction(Intent.ACTION_SCREEN_ON);
+        lockFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        lockFilter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(mScreenStateReceiver, lockFilter);
     }
 
     private void onSqueeze() {
@@ -83,7 +104,9 @@ public class SqueezeService extends Service {
     public void onDestroy() {
         Log.e(TAG, "onDestroy");
 
-        mTracker.close();
+        unregisterReceiver(mScreenStateReceiver);
+
+        mTracker.setEnabled(false);
         mTracker = null;
 
         super.onDestroy();
