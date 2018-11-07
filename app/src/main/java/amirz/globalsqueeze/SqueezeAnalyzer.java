@@ -7,7 +7,7 @@ import com.paramsen.noise.NoiseOptimized;
 
 public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
     private static final double AREA_MIN = 0.5;
-    private static final float SQUEEZE_THRESHOLD = 0.185f;
+    private static final float SQUEEZE_THRESHOLD = 0.175f;
 
     private final NoiseOptimized noise;
     private final float[] abs;
