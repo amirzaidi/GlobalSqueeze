@@ -11,10 +11,10 @@ public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
     private final float[][] abs;
     private final double[] area;
     private final Range<Integer> mSqueezeIndices;
-    private final Range<Double> mSqueezeArea;
+    private final Range<Double>[] mSqueezeArea;
     private final float mSqueezeThreshold;
 
-    public SqueezeAnalyzer(int samples, Range<Integer> squeezeIndices, Range<Double> squeezeArea,
+    public SqueezeAnalyzer(int samples, Range<Integer> squeezeIndices, Range<Double>[] squeezeArea,
                            float squeezeThreshold) {
         mNoise = Noise.real().optimized().init(samples, true);
 
@@ -58,7 +58,7 @@ public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
         float squeezeFactor = 0f;
 
         for (int axis = 0; axis < 3; axis++) {
-            if (!mSqueezeArea.contains(area[axis])) {
+            if (!mSqueezeArea[axis].contains(area[axis])) {
                 return false;
             }
 
@@ -67,7 +67,8 @@ public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
             }
         }
 
-        Log.e("SqueezeAnalyzer", "Squeeze " + squeezeFactor);
+        Log.e("SqueezeAnalyzer", "Squeeze " + squeezeFactor + " "
+                + area[0] + " " + area[1] + " " + area[2]);
         return squeezeFactor >= mSqueezeThreshold;
     }
 

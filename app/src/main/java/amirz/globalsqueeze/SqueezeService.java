@@ -20,13 +20,14 @@ import static amirz.globalsqueeze.Utilities.SQUEEZE_AREA_RANGE;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_INDICES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
 import static amirz.globalsqueeze.Utilities.VIBRATE_DURATION;
+import static amirz.globalsqueeze.Utilities.VIBRATE_INTESITY;
 
 public class SqueezeService extends Service {
     private static final String TAG = "SqueezeService";
 
     private static final String FOREGROUND_CHANNEL = "Foreground";
     private static final int FOREGROUND_ID = 1;
-    private static final int MIN_DELAY = 750;
+    private static final int MIN_DELAY = 1500;
 
     public static void startForeground(Context context) {
         Intent intent = new Intent(context, SqueezeService.class);
@@ -94,7 +95,7 @@ public class SqueezeService extends Service {
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             if (ATLEAST_OREO) {
                 v.vibrate(VibrationEffect.createOneShot(
-                        VIBRATE_DURATION, VibrationEffect.DEFAULT_AMPLITUDE));
+                        VIBRATE_DURATION, VIBRATE_INTESITY));
             } else {
                 v.vibrate(VIBRATE_DURATION);
             }
