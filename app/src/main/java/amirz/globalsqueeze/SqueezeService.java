@@ -14,7 +14,9 @@ import android.util.Log;
 
 import static amirz.globalsqueeze.Utilities.ATLEAST_OREO;
 import static amirz.globalsqueeze.Utilities.SAMPLES;
-import static amirz.globalsqueeze.Utilities.SQUEEZE;
+import static amirz.globalsqueeze.Utilities.SQUEEZE_AREA_RANGE;
+import static amirz.globalsqueeze.Utilities.SQUEEZE_INDICES;
+import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
 
 public class SqueezeService extends Service {
     private static final String TAG = "SqueezeService";
@@ -64,7 +66,8 @@ public class SqueezeService extends Service {
         builder.setSmallIcon(R.drawable.ic_squeeze);
         startForeground(FOREGROUND_ID, builder.build());
 
-        mTracker = new MotionTracker(this, new SqueezeAnalyzer(SAMPLES, SQUEEZE) {
+        mTracker = new MotionTracker(this, new SqueezeAnalyzer(SAMPLES, SQUEEZE_INDICES,
+                SQUEEZE_AREA_RANGE, SQUEEZE_THRESHOLD) {
             @Override
             protected void onSqueeze() {
                 SqueezeService.this.onSqueeze();

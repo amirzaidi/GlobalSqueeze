@@ -16,13 +16,13 @@ public class MotionTracker implements SensorEventListener {
     private final Sensor mLinearSensor;
 
     private Cb mCallback;
-    private final float[] mSamples;
+    private final float[][] mSamples;
     private int mSampleCount = 0;
 
     private boolean mEnabled;
 
     interface Cb {
-        void processSamples(float[] samples);
+        void processSamples(float[][] samples);
     }
 
     public MotionTracker(Context context, Cb callback, int samples) {
@@ -30,7 +30,7 @@ public class MotionTracker implements SensorEventListener {
         mLinearSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         mCallback = callback;
-        mSamples = new float[samples];
+        mSamples = new float[3][samples];
     }
 
     public void setEnabled(boolean enabled) {
@@ -45,9 +45,11 @@ public class MotionTracker implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        mSamples[mSampleCount++] = event.values[0];
+        for (int i = 0; i < 3; i++) {
+            mSamples[i][mSampleCount] = event.values[i];
+        }
 
-        if (mSampleCount == mSamples.length) {
+        if (++mSampleCount == mSamples[0].length) {
             mCallback.processSamples(mSamples);
             mSampleCount = 0;
         }

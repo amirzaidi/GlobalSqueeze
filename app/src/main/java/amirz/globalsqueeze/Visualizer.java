@@ -41,11 +41,12 @@ public class Visualizer extends View {
             paint.setStrokeWidth(getHeight() * 0.005f);
             rect.set(0, 0, getWidth(), getHeight());
 
+            float scale = 2.5f;
             for (int i = 0; i < data.length - 1; i++) {
                 points[i * 4] = rect.width() * i / (data.length - 1);
-                points[i * 4 + 1] = rect.height() / 2 + data[i] * (rect.height() / 3);
+                points[i * 4 + 1] = rect.height() / 2 + (data[i] * scale) * (rect.height() / 3);
                 points[i * 4 + 2] = rect.width() * (i + 1) / (data.length - 1);
-                points[i * 4 + 3] = rect.height() / 2 + data[i + 1] * (rect.height() / 3);
+                points[i * 4 + 3] = rect.height() / 2 + (data[i + 1] * scale) * (rect.height() / 3);
             }
             canvas.drawLines(points, paint);
         }

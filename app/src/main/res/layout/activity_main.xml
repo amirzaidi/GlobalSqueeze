@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <amirz.globalsqueeze.Visualizer
-        android:id="@+id/visualizer"
+        android:id="@+id/visualizerX"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
     </amirz.globalsqueeze.Visualizer>
 
-</android.support.constraint.ConstraintLayout>
+    <amirz.globalsqueeze.Visualizer
+        android:id="@+id/visualizerY"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </amirz.globalsqueeze.Visualizer>
+
+    <amirz.globalsqueeze.Visualizer
+        android:id="@+id/visualizerZ"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </amirz.globalsqueeze.Visualizer>
+
+</LinearLayout>

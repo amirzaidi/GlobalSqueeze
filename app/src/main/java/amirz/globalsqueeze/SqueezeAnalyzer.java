@@ -1,58 +1,77 @@
 package amirz.globalsqueeze;
 
+import android.util.Log;
 import android.util.Range;
 
 import com.paramsen.noise.Noise;
 import com.paramsen.noise.NoiseOptimized;
 
 public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
-    private static final double AREA_MIN = 0.5;
-    private static final float SQUEEZE_THRESHOLD = 0.175f;
-
-    private final NoiseOptimized noise;
-    private final float[] abs;
+    private final NoiseOptimized mNoise;
+    private final float[][] abs;
+    private final double[] area;
     private final Range<Integer> mSqueezeIndices;
+    private final Range<Double> mSqueezeArea;
+    private final float mSqueezeThreshold;
 
-    public SqueezeAnalyzer(int samples, Range<Integer> squeezeIndices) {
-        noise = Noise.real().optimized().init(samples, true);
+    public SqueezeAnalyzer(int samples, Range<Integer> squeezeIndices, Range<Double> squeezeArea,
+                           float squeezeThreshold) {
+        mNoise = Noise.real().optimized().init(samples, true);
 
-        abs = new float[samples / 2 + 1];
+        abs = new float[3][samples / 2 + 1];
+        area = new double[3];
         mSqueezeIndices = squeezeIndices;
+        mSqueezeArea = squeezeArea;
+        mSqueezeThreshold = squeezeThreshold;
     }
 
     @Override
-    public void processSamples(float[] samples) {
-        float[] fft = noise.fft(samples);
+    public void processSamples(float[][] samples) {
+        for (int axis = 0; axis < samples.length; axis++) {
+            float[] fft = mNoise.fft(samples[axis]);
+            float[] abs = this.abs[axis];
 
-        double area = 0;
-        for (int i = 0; i < fft.length / 2; i++) {
-            float real = fft[i * 2];
-            float imaginary = fft[i * 2 + 1];
+            area[axis] = 0;
+            for (int i = 0; i < fft.length / 2; i++) {
+                float real = fft[i * 2];
+                float imaginary = fft[i * 2 + 1];
 
-            double value = Math.hypot(real, imaginary);
-            abs[i] = (float) value;
-            area += value;
+                double value = Math.hypot(real, imaginary);
+                abs[i] = (float) value;
+                area[axis] += value;
+            }
+
+            // Scale by area
+            for (int i = 0; i < abs.length; i++) {
+                abs[i] /= area[axis];
+            }
         }
 
-        // Scale by area
-        area = Math.max(AREA_MIN, area);
-        for (int i = 0; i < abs.length; i++) {
-            abs[i] /= area;
+        if (analyzeForSqueeze()) {
+            onSqueeze();
         }
 
         onUpdate(abs);
-
-        float squeezeFactor = 0;
-        for (int i = mSqueezeIndices.getLower(); i <= mSqueezeIndices.getUpper(); i++) {
-            squeezeFactor += abs[i];
-        }
-
-        if (squeezeFactor >= SQUEEZE_THRESHOLD) {
-            onSqueeze();
-        }
     }
 
-    protected void onUpdate(float[] abs) {
+    private boolean analyzeForSqueeze() {
+        float squeezeFactor = 0f;
+
+        for (int axis = 0; axis < 3; axis++) {
+            if (!mSqueezeArea.contains(area[axis])) {
+                return false;
+            }
+
+            for (int i = mSqueezeIndices.getLower(); i <= mSqueezeIndices.getUpper(); i++) {
+                squeezeFactor += abs[axis][i];
+            }
+        }
+
+        Log.e("SqueezeAnalyzer", "Squeeze " + squeezeFactor);
+        return squeezeFactor >= mSqueezeThreshold;
+    }
+
+    protected void onUpdate(float[][] abs) {
     }
 
     protected void onSqueeze() {
