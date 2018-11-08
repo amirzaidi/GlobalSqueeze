@@ -34,15 +34,23 @@ public class MainActivity extends Activity {
                 }
             }
         }, SAMPLES);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         mTracker.setEnabled(true);
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
+        super.onStop();
         mTracker.setEnabled(false);
-        mTracker = null;
+    }
 
+    @Override
+    protected void onDestroy() {
+        mTracker = null;
         super.onDestroy();
     }
 }
