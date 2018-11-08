@@ -9,7 +9,7 @@ public class Utilities {
     public static final int SAMPLES = 64;
     public static final Range<Integer> SQUEEZE_INDICES = new Range<>(3, 4);
     public static final Range<Double>[] SQUEEZE_AREA_RANGE;
-    public static final float SQUEEZE_THRESHOLD = 0.9f;
+    public static final float SQUEEZE_THRESHOLD = 0.6f;
     public static final int VIBRATE_DURATION = 150;
     public static final int VIBRATE_INTESITY = 25;
 

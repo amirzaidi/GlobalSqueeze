@@ -27,7 +27,7 @@ public class SqueezeService extends Service {
 
     private static final String FOREGROUND_CHANNEL = "Foreground";
     private static final int FOREGROUND_ID = 1;
-    private static final int MIN_DELAY = 1500;
+    private static final int MIN_DELAY = 1000;
 
     public static void startForeground(Context context) {
         Intent intent = new Intent(context, SqueezeService.class);
