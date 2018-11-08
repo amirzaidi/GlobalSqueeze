@@ -15,9 +15,13 @@ public class Utilities {
 
     static {
         SQUEEZE_AREA_RANGE = new Range[3];
-        SQUEEZE_AREA_RANGE[0] = new Range<>(100d, 270d);
-        SQUEEZE_AREA_RANGE[1] = new Range<>(40d, 120d);
-        SQUEEZE_AREA_RANGE[2] = new Range<>(40d, 270d);
+        SQUEEZE_AREA_RANGE[0] = new Range<>(100d, 500d);
+        SQUEEZE_AREA_RANGE[1] = new Range<>(30d, 400d);
+        SQUEEZE_AREA_RANGE[2] = new Range<>(40d, 500d);
+    }
+
+    public static float sqr(float in) {
+        return in * in;
     }
 
     private Utilities() {
