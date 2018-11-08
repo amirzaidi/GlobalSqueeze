@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -17,6 +19,7 @@ import static amirz.globalsqueeze.Utilities.SAMPLES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_AREA_RANGE;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_INDICES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
+import static amirz.globalsqueeze.Utilities.VIBRATE_DURATION;
 
 public class SqueezeService extends Service {
     private static final String TAG = "SqueezeService";
@@ -88,8 +91,15 @@ public class SqueezeService extends Service {
 
         long currentTime = System.currentTimeMillis();
         if (currentTime - mLastLaunch > MIN_DELAY) {
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if (ATLEAST_OREO) {
+                v.vibrate(VibrationEffect.createOneShot(
+                        VIBRATE_DURATION, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                v.vibrate(VIBRATE_DURATION);
+            }
+
             Intent opa = new Intent(Intent.ACTION_VOICE_COMMAND);
-            opa.setPackage("com.google.android.googlequicksearchbox");
             opa.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(opa);
 
