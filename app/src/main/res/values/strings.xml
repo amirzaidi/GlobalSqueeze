@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Squeeze</string>
+    <string name="ms_abbreviation">ms</string>
+    <string name="on_reset_pref">Preferences have been restored to the default values.</string>
 </resources>

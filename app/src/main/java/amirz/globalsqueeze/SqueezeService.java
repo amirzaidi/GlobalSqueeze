@@ -1,28 +1,25 @@
 package amirz.globalsqueeze;
 
-import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.IBinder;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import amirz.globalsqueeze.settings.Tunable;
 
 import static amirz.globalsqueeze.Utilities.ATLEAST_OREO;
 import static amirz.globalsqueeze.Utilities.SAMPLES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_AREA_RANGE;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_INDICES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
-import static amirz.globalsqueeze.Utilities.VIBRATE_DURATION;
-import static amirz.globalsqueeze.Utilities.VIBRATE_INTESITY;
 
-public class SqueezeService extends Service {
+public class SqueezeService extends Service
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "SqueezeService";
 
     private static final String FOREGROUND_CHANNEL = "Foreground";
@@ -39,18 +36,8 @@ public class SqueezeService extends Service {
     }
 
     private MotionTracker mTracker;
+    private ScreenLock mLock;
     private long mLastLaunch;
-
-    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            KeyguardManager km = context.getSystemService(KeyguardManager.class);
-            boolean enabled = !km.inKeyguardRestrictedInputMode();
-
-            Log.e(TAG, "Changing state to " + enabled);
-            mTracker.setEnabled(enabled);
-        }
-    };
 
     public SqueezeService() {
     }
@@ -79,46 +66,73 @@ public class SqueezeService extends Service {
         }, SAMPLES);
 
         // Handle screen lock
-        mScreenStateReceiver.onReceive(this, null);
-        IntentFilter lockFilter = new IntentFilter();
-        lockFilter.addAction(Intent.ACTION_SCREEN_ON);
-        lockFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        lockFilter.addAction(Intent.ACTION_USER_PRESENT);
-        registerReceiver(mScreenStateReceiver, lockFilter);
+        mLock = new ScreenLock(this, locked -> mTracker.setEnabled(!locked));
+
+        SharedPreferences prefs = Utilities.prefs(this);
+
+        Tunable.applyAll(prefs, getResources());
+        setParams();
+
+        prefs.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (Tunable.apply(prefs, getResources(), key)) {
+            setParams();
+        }
+    }
+
+    private void setParams() {
+
     }
 
     private void onSqueeze() {
         Log.e(TAG, "Squeeze");
 
         long currentTime = System.currentTimeMillis();
-        if (currentTime - mLastLaunch > MIN_DELAY) {
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            if (ATLEAST_OREO) {
-                v.vibrate(VibrationEffect.createOneShot(
-                        VIBRATE_DURATION, VIBRATE_INTESITY));
-            } else {
-                v.vibrate(VIBRATE_DURATION);
-            }
-
-            Intent opa = new Intent(Intent.ACTION_VOICE_COMMAND);
-            opa.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(opa);
-
+        String type = Tunable.INTENT_ACTION.get();
+        if (type != null && currentTime - mLastLaunch > MIN_DELAY) {
             mLastLaunch = currentTime;
+
+            Vibrator.getInstance().vibrate(this,
+                    Tunable.SQUEEZE_VIBRATE_DURATION.get(),
+                    Tunable.SQUEEZE_VIBRATE_INTENSITY.get());
+
+            startIntent(type);
         }
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
-        return super.onStartCommand(intent, flags, startId);
+    private void startIntent(String type) {
+        Log.e(TAG, "Starting " + type);
+
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        switch (type) {
+            case "google":
+                intent.setAction(Intent.ACTION_VOICE_COMMAND);
+                break;
+            case "assist":
+                intent.setAction("amirz.assistmapper.MAIN");
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                        | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                break;
+            default:
+                return;
+        }
+
+        startActivity(intent);
     }
 
     @Override
     public void onDestroy() {
         Log.e(TAG, "onDestroy");
 
-        unregisterReceiver(mScreenStateReceiver);
+        SharedPreferences prefs = Utilities.prefs(this);
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
+
+        mLock.close();
 
         mTracker.setEnabled(false);
         mTracker = null;
@@ -128,7 +142,6 @@ public class SqueezeService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.e(TAG, "onBind");
         return null;
     }
 }

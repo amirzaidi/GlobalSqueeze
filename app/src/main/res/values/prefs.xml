@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_intent_title">Launch Intent</string>
+
+    <string name="pref_intent_action">pref_intent_action</string>
+    <string name="pref_intent_action_title">Action</string>
+    <string-array name="pref_intent_action_entry_titles">
+        <item>Google Assistant</item>
+        <item>Assist Mapper</item>
+    </string-array>
+    <string-array translatable="false" name="pref_intent_action_entries">
+        <item>google</item>
+        <item>assist</item>
+    </string-array>
+    <string name="pref_intent_action_default">google</string>
+
+    <string name="pref_squeeze_title">Squeeze</string>
+
+    <string name="pref_squeeze_vibrate_duration">pref_squeeze_vibrate_duration</string>
+    <string name="pref_squeeze_vibrate_duration_title">Vibrate Duration</string>
+    <integer name="pref_squeeze_vibrate_duration_default">150</integer>
+
+    <string name="pref_squeeze_vibrate_intensity">pref_squeeze_vibrate_intensity</string>
+    <string name="pref_squeeze_vibrate_intensity_title">Vibrate Intensity</string>
+    <integer name="pref_squeeze_vibrate_intensity_default">25</integer>
+
+    <string name="pref_reset_title">Reset</string>
+
+    <string name="pref_reset_prefs">pref_reset_prefs</string>
+    <string name="pref_reset_prefs_title">Revert settings</string>
+    <string name="pref_reset_prefs_summary">Restores the default settings</string>
+</resources>

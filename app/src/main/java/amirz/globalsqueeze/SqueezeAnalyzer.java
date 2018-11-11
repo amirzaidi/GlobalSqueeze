@@ -74,8 +74,8 @@ public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
         float diffSqueeze = sqr(squeeze) - sqr(mDecayingAverageSqueeze);
         mDecayingAverageSqueeze = (mDecayingAverageSqueeze + squeeze) / 2;
 
-        Log.e("SqueezeAnalyzer", "Squeeze " + squeeze + " " + diffSqueeze + " "
-                + area[0] + " " + area[1] + " " + area[2]);
+        //Log.e("SqueezeAnalyzer", "Squeeze " + squeeze + " " + diffSqueeze + " "
+        //        + area[0] + " " + area[1] + " " + area[2]);
 
         return validArea && diffSqueeze >= mSqueezeThreshold;
     }
