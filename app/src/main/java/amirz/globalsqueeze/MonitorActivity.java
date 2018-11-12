@@ -1,26 +1,20 @@
 package amirz.globalsqueeze;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-
-import amirz.globalsqueeze.settings.SettingsActivity;
-import amirz.globalsqueeze.settings.Tunable;
 
 import static amirz.globalsqueeze.Utilities.SAMPLES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_AREA_RANGE;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_INDICES;
 import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
 
-public class MainActivity extends Activity {
+public class MonitorActivity extends Activity {
     private MotionTracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        SqueezeService.startForeground(this);
 
         final Visualizer[] visualizers = {
                 findViewById(R.id.visualizerX),
@@ -38,9 +32,6 @@ public class MainActivity extends Activity {
                 }
             }
         }, SAMPLES);
-
-        Tunable.applyAll(Utilities.prefs(this), getResources());
-        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     @Override

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pref_monitor">Monitor</string>
+
+    <string name="pref_monitor_fft">pref_monitor_fft</string>
+    <string name="pref_monitor_fft_title">Fourier Domain</string>
+    <string name="pref_monitor_fft_summary">Look at the fourier transformation of the sensors</string>
+
     <string name="pref_intent_title">Launch Intent</string>
 
     <string name="pref_intent_action">pref_intent_action</string>

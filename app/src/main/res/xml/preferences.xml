@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/pref_monitor">
+
+        <Preference
+            android:key="@string/pref_monitor_fft"
+            android:title="@string/pref_monitor_fft_title"
+            android:summary="@string/pref_monitor_fft_summary" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_intent_title">
 
         <ListPreference

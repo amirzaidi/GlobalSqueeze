@@ -2,9 +2,12 @@ package amirz.globalsqueeze;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -55,6 +58,7 @@ public class SqueezeService extends Service
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, FOREGROUND_CHANNEL);
         builder.setSmallIcon(R.drawable.ic_squeeze);
+        builder.addAction(getKillAction());
         startForeground(FOREGROUND_ID, builder.build());
 
         mTracker = new MotionTracker(this, new SqueezeAnalyzer(SAMPLES, SQUEEZE_INDICES,
@@ -84,7 +88,25 @@ public class SqueezeService extends Service
     }
 
     private void setParams() {
+        Log.e(TAG, "Parameters changed");
+    }
 
+    private NotificationCompat.Action getKillAction() {
+        final String killIntent = "amirz.globalsqueeze.KILL";
+
+        IntentFilter killFilter = new IntentFilter();
+        killFilter.addAction(killIntent);
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                unregisterReceiver(this);
+                SqueezeService.this.stopSelf();
+            }
+        }, killFilter);
+
+        Intent intent = new Intent(killIntent);
+        PendingIntent pend = PendingIntent.getBroadcast(this, 1, intent, 0);
+        return new NotificationCompat.Action.Builder(0, "Exit", pend).build();
     }
 
     private void onSqueeze() {
