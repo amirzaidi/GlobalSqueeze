@@ -25,6 +25,7 @@ public class SqueezeService extends Service
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "SqueezeService";
 
+    private static final String INTENT_KILL = "amirz.globalsqueeze.KILL";
     private static final String FOREGROUND_CHANNEL = "Foreground";
     private static final int FOREGROUND_ID = 1;
     private static final int MIN_DELAY = 1000;
@@ -92,10 +93,8 @@ public class SqueezeService extends Service
     }
 
     private NotificationCompat.Action getKillAction() {
-        final String killIntent = "amirz.globalsqueeze.KILL";
-
         IntentFilter killFilter = new IntentFilter();
-        killFilter.addAction(killIntent);
+        killFilter.addAction(INTENT_KILL);
         registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -104,7 +103,7 @@ public class SqueezeService extends Service
             }
         }, killFilter);
 
-        Intent intent = new Intent(killIntent);
+        Intent intent = new Intent(INTENT_KILL);
         PendingIntent pend = PendingIntent.getBroadcast(this, 1, intent, 0);
         return new NotificationCompat.Action.Builder(0, "Exit", pend).build();
     }
