@@ -29,7 +29,7 @@ public class Tunable {
                 R.integer.pref_squeeze_vibrate_duration_default);
 
         SQUEEZE_VIBRATE_INTENSITY = new IntegerRef(R.string.pref_squeeze_vibrate_intensity,
-                        R.integer.pref_squeeze_vibrate_intensity_default);
+                R.integer.pref_squeeze_vibrate_intensity_default);
     }
 
     public static void applyAll(SharedPreferences prefs, Resources res) {
