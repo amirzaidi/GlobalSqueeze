@@ -24,6 +24,11 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+    applicationVariants.all {
+        variant -> variant.outputs.all {
+            outputFileName = "GlobalSqueeze-${variant.name}.apk"
+        }
+    }
 }
 
 dependencies {
