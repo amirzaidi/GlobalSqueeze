@@ -3,10 +3,7 @@ package amirz.globalsqueeze;
 import android.app.Activity;
 import android.os.Bundle;
 
-import static amirz.globalsqueeze.Utilities.SAMPLES;
-import static amirz.globalsqueeze.Utilities.SQUEEZE_AREA_RANGE;
-import static amirz.globalsqueeze.Utilities.SQUEEZE_INDICES;
-import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
+import static amirz.globalsqueeze.Utilities.*;
 
 public class MonitorActivity extends Activity {
     private MotionTracker mTracker;

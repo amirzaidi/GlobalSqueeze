@@ -1,4 +1,4 @@
-package amirz.globalsqueeze.settings;
+package amirz.library.settings;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -9,27 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import amirz.globalsqueeze.R;
+import amirz.library.Logger;
 
 public class Tunable {
-    private static final String TAG = "Tunable";
-
-    public static final StringRef INTENT_ACTION;
-    public static final IntegerRef SQUEEZE_VIBRATE_DURATION;
-    public static final IntegerRef SQUEEZE_VIBRATE_INTENSITY;
-
     private static final List<Ref> sTunables;
 
     static {
         sTunables = new ArrayList<>();
-
-        INTENT_ACTION = new StringRef(R.string.pref_intent_action,
-                R.string.pref_intent_action_default);
-
-        SQUEEZE_VIBRATE_DURATION = new IntegerRef(R.string.pref_squeeze_vibrate_duration,
-                R.integer.pref_squeeze_vibrate_duration_default);
-
-        SQUEEZE_VIBRATE_INTENSITY = new IntegerRef(R.string.pref_squeeze_vibrate_intensity,
-                R.integer.pref_squeeze_vibrate_intensity_default);
     }
 
     public static void applyAll(SharedPreferences prefs, Resources res) {
@@ -53,12 +39,12 @@ public class Tunable {
         TypedValue defaultValue = new TypedValue();
         res.getValue(tunable.defaultId, defaultValue, true);
 
-        Log.d(TAG, "Updating " + key);
+        Logger.log( "Updating " + key);
         tunable.load(prefs, key, defaultValue);
     }
 
     public static class BooleanRef extends Ref<Boolean> {
-        private BooleanRef(int settingId, int defaultId) {
+        public BooleanRef(int settingId, int defaultId) {
             super(settingId, defaultId);
         }
 
@@ -69,7 +55,7 @@ public class Tunable {
     }
 
     public static class FloatRef extends Ref<Float> {
-        private FloatRef(int settingId, int defaultId) {
+        public FloatRef(int settingId, int defaultId) {
             super(settingId, defaultId);
         }
 
@@ -81,7 +67,7 @@ public class Tunable {
     }
 
     public static class IntegerRef extends Ref<Integer> {
-        private IntegerRef(int settingId, int defaultId) {
+        public IntegerRef(int settingId, int defaultId) {
             super(settingId, defaultId);
         }
 
@@ -93,7 +79,7 @@ public class Tunable {
     }
 
     public static class StringRef extends Ref<String> {
-        private StringRef(int settingId, int entries) {
+        public StringRef(int settingId, int entries) {
             super(settingId, entries);
         }
 
@@ -120,5 +106,8 @@ public class Tunable {
         }
 
         abstract void load(SharedPreferences prefs, String key, TypedValue defaultValue);
+    }
+
+    private Tunable() {
     }
 }

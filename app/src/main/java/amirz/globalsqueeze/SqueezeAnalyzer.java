@@ -1,10 +1,11 @@
 package amirz.globalsqueeze;
 
-import android.util.Log;
 import android.util.Range;
 
 import com.paramsen.noise.Noise;
 import com.paramsen.noise.NoiseOptimized;
+
+import amirz.library.Logger;
 
 import static amirz.globalsqueeze.Utilities.sqr;
 
@@ -58,12 +59,11 @@ public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
     }
 
     private boolean analyzeForSqueeze() {
-        boolean validArea = true;
         float squeeze = 0f;
 
         for (int axis = 0; axis < 3; axis++) {
             if (!mSqueezeArea[axis].contains(area[axis])) {
-                validArea = false;
+                return false;
             }
 
             for (int i = mSqueezeIndices.getLower(); i <= mSqueezeIndices.getUpper(); i++) {
@@ -74,10 +74,10 @@ public abstract class SqueezeAnalyzer implements MotionTracker.Cb {
         float diffSqueeze = sqr(squeeze) - sqr(mDecayingAverageSqueeze);
         mDecayingAverageSqueeze = (mDecayingAverageSqueeze + squeeze) / 2;
 
-        //Log.e("SqueezeAnalyzer", "Squeeze " + squeeze + " " + diffSqueeze + " "
-        //        + area[0] + " " + area[1] + " " + area[2]);
+        Logger.log("Squeeze " + squeeze + " " + diffSqueeze + " "
+                + area[0] + " " + area[1] + " " + area[2]);
 
-        return validArea && diffSqueeze >= mSqueezeThreshold;
+        return diffSqueeze >= mSqueezeThreshold;
     }
 
     protected void onUpdate(float[][] abs) {

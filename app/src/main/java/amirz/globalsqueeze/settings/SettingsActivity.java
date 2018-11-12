@@ -12,6 +12,7 @@ import amirz.globalsqueeze.MonitorActivity;
 import amirz.globalsqueeze.R;
 import amirz.globalsqueeze.SqueezeService;
 import amirz.globalsqueeze.Utilities;
+import amirz.library.settings.Tunable;
 
 public class SettingsActivity extends Activity {
     @Override

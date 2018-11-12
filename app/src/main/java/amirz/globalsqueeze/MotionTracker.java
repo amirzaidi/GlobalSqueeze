@@ -7,9 +7,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-public class MotionTracker implements SensorEventListener {
-    private static final String TAG = "MotionTracker";
+import amirz.library.BinaryState;
+import amirz.library.Logger;
 
+public class MotionTracker extends BinaryState implements SensorEventListener {
     private static final int SPEED = SensorManager.SENSOR_DELAY_FASTEST;
 
     private final SensorManager mSensorManager;
@@ -19,13 +20,13 @@ public class MotionTracker implements SensorEventListener {
     private final float[][] mSamples;
     private int mSampleCount = 0;
 
-    private boolean mEnabled;
-
     interface Cb {
         void processSamples(float[][] samples);
     }
 
     public MotionTracker(Context context, Cb callback, int samples) {
+        super(false);
+
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mLinearSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
@@ -33,14 +34,14 @@ public class MotionTracker implements SensorEventListener {
         mSamples = new float[3][samples];
     }
 
-    public void setEnabled(boolean enabled) {
-        if (enabled && !mEnabled) {
-            mSensorManager.registerListener(this, mLinearSensor, SPEED);
-            mEnabled = true;
-        } else if (!enabled && mEnabled) {
-            mSensorManager.unregisterListener(this);
-            mEnabled = false;
-        }
+    @Override
+    protected void onEnable() {
+        mSensorManager.registerListener(this, mLinearSensor, SPEED);
+    }
+
+    @Override
+    protected void onDisable() {
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
@@ -57,6 +58,6 @@ public class MotionTracker implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        Log.e(TAG, "onAccuracyChanged");
+        Logger.log("onAccuracyChanged");
     }
 }

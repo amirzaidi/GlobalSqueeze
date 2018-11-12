@@ -11,9 +11,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
-import amirz.globalsqueeze.settings.Tunable;
+import amirz.globalsqueeze.settings.Tunables;
+import amirz.library.Logger;
+import amirz.library.settings.Tunable;
 
 import static amirz.globalsqueeze.Utilities.ATLEAST_OREO;
 import static amirz.globalsqueeze.Utilities.SAMPLES;
@@ -23,8 +24,6 @@ import static amirz.globalsqueeze.Utilities.SQUEEZE_THRESHOLD;
 
 public class SqueezeService extends Service
         implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = "SqueezeService";
-
     private static final String INTENT_KILL = "amirz.globalsqueeze.KILL";
     private static final String FOREGROUND_CHANNEL = "Foreground";
     private static final int FOREGROUND_ID = 1;
@@ -48,7 +47,7 @@ public class SqueezeService extends Service
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
+        Logger.log( "onCreate");
         super.onCreate();
 
         if (ATLEAST_OREO) {
@@ -89,7 +88,7 @@ public class SqueezeService extends Service
     }
 
     private void setParams() {
-        Log.e(TAG, "Parameters changed");
+        Logger.log("Parameters changed");
     }
 
     private NotificationCompat.Action getKillAction() {
@@ -109,23 +108,23 @@ public class SqueezeService extends Service
     }
 
     private void onSqueeze() {
-        Log.e(TAG, "Squeeze");
+        Logger.log("Squeeze");
 
         long currentTime = System.currentTimeMillis();
-        String type = Tunable.INTENT_ACTION.get();
+        String type = Tunables.INTENT_ACTION.get();
         if (type != null && currentTime - mLastLaunch > MIN_DELAY) {
             mLastLaunch = currentTime;
 
             Vibrator.getInstance().vibrate(this,
-                    Tunable.SQUEEZE_VIBRATE_DURATION.get(),
-                    Tunable.SQUEEZE_VIBRATE_INTENSITY.get());
+                    Tunables.SQUEEZE_VIBRATE_DURATION.get(),
+                    Tunables.SQUEEZE_VIBRATE_INTENSITY.get());
 
             startIntent(type);
         }
     }
 
     private void startIntent(String type) {
-        Log.e(TAG, "Starting " + type);
+        Logger.log("Starting " + type);
 
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -148,7 +147,7 @@ public class SqueezeService extends Service
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        Logger.log( "onDestroy");
 
         SharedPreferences prefs = Utilities.prefs(this);
         prefs.unregisterOnSharedPreferenceChangeListener(this);
