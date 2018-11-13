@@ -57,6 +57,7 @@ public class SqueezeService extends Service
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, FOREGROUND_CHANNEL);
         builder.setSmallIcon(R.drawable.ic_squeeze);
+        builder.setContentText("Detecting squeezes..");
         builder.addAction(getKillAction());
         startForeground(FOREGROUND_ID, builder.build());
 
