@@ -1,11 +1,12 @@
-package amirz.globalsqueeze.settings;
+package amirz.library.settings;
 
 import android.content.Context;
+import android.preference.EditTextPreference;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-public class EditTextPreference extends android.preference.EditTextPreference {
-    public EditTextPreference(Context context, AttributeSet attrs) {
+public class TextPreference extends EditTextPreference {
+    public TextPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

@@ -12,9 +12,8 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
-import amirz.globalsqueeze.settings.Tunables;
+import amirz.globalsqueeze.settings.Preferences;
 import amirz.library.Logger;
-import amirz.library.settings.Tunable;
 
 import static amirz.globalsqueeze.Utilities.ATLEAST_OREO;
 import static amirz.globalsqueeze.Utilities.SAMPLES;
@@ -74,7 +73,7 @@ public class SqueezeService extends Service
 
         SharedPreferences prefs = Utilities.prefs(this);
 
-        Tunable.applyAll(prefs, getResources());
+        Preferences.global().applyAll(prefs, getResources());
         setParams();
 
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -82,7 +81,7 @@ public class SqueezeService extends Service
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (Tunable.apply(prefs, getResources(), key)) {
+        if (Preferences.global().apply(prefs, getResources(), key)) {
             setParams();
         }
     }
@@ -111,13 +110,13 @@ public class SqueezeService extends Service
         Logger.log("Squeeze");
 
         long currentTime = System.currentTimeMillis();
-        String type = Tunables.INTENT_ACTION.get();
+        String type = Preferences.global().intentAction.get();
         if (type != null && currentTime - mLastLaunch > MIN_DELAY) {
             mLastLaunch = currentTime;
 
             Vibrator.getInstance().vibrate(this,
-                    Tunables.SQUEEZE_VIBRATE_DURATION.get(),
-                    Tunables.SQUEEZE_VIBRATE_INTENSITY.get());
+                    Preferences.global().squeezeVibrateDuration.get(),
+                    Preferences.global().squeezeVibrateIntensity.get());
 
             startIntent(type);
         }

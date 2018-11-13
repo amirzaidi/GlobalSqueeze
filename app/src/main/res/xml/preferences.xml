@@ -24,17 +24,16 @@
 
     <PreferenceCategory android:title="@string/pref_squeeze_title">
 
-        <amirz.globalsqueeze.settings.EditTextPreference
+        <amirz.library.settings.TextPreference
             android:key="@string/pref_squeeze_vibrate_duration"
             android:title="@string/pref_squeeze_vibrate_duration_title"
             android:summary="@string/ms_abbreviation"
             android:defaultValue="@integer/pref_squeeze_vibrate_duration_default"
             android:numeric="integer" />
 
-        <amirz.globalsqueeze.settings.EditTextPreference
+        <amirz.library.settings.TextPreference
             android:key="@string/pref_squeeze_vibrate_intensity"
             android:title="@string/pref_squeeze_vibrate_intensity_title"
-            android:summary="@string/ms_abbreviation"
             android:defaultValue="@integer/pref_squeeze_vibrate_intensity_default"
             android:numeric="integer" />
 

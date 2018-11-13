@@ -12,7 +12,6 @@ import amirz.globalsqueeze.MonitorActivity;
 import amirz.globalsqueeze.R;
 import amirz.globalsqueeze.SqueezeService;
 import amirz.globalsqueeze.Utilities;
-import amirz.library.settings.Tunable;
 
 public class SettingsActivity extends Activity {
     @Override
@@ -68,7 +67,7 @@ public class SettingsActivity extends Activity {
                 editor.clear();
                 editor.apply();
 
-                Tunable.applyAll(prefs, getResources());
+                Preferences.global().applyAll(prefs, getResources());
 
                 Toast.makeText(mContext, R.string.on_reset_pref, Toast.LENGTH_SHORT).show();
 

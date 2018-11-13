@@ -2,30 +2,38 @@ package amirz.library.settings;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.util.Log;
 import android.util.TypedValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import amirz.globalsqueeze.R;
 import amirz.library.Logger;
 
-public class Tunable {
-    private static final List<Ref> sTunables;
+/**
+ * Class that provides synchronized preferences using the singleton design pattern.
+ * Extensions should add a static getInstance() method.
+ */
+public abstract class GlobalPreferences {
+    private final List<Ref> mPreferences = new ArrayList<>();
 
-    static {
-        sTunables = new ArrayList<>();
-    }
-
-    public static void applyAll(SharedPreferences prefs, Resources res) {
-        for (Ref tunable : sTunables) {
+    /**
+     * Loads all preferences from the SharedPreferences instance.
+     * @param prefs Instance from which the data is pulled.
+     * @param res Resources used to deserialize the default values as fallback values.
+     */
+    public void applyAll(SharedPreferences prefs, Resources res) {
+        for (Ref tunable : mPreferences) {
             apply(prefs, res, tunable);
         }
     }
 
-    public static boolean apply(SharedPreferences prefs, Resources res, String key) {
-        for (Ref tunable : sTunables) {
+    /**
+     * Loads one key's preference from the SharedPreferences instance.
+     * @param prefs Instance from which the data is pulled.
+     * @param res Resources used to deserialize the default value as a fallback value.
+     */
+    public boolean apply(SharedPreferences prefs, Resources res, String key) {
+        for (Ref tunable : mPreferences) {
             if (key.equals(res.getString(tunable.settingId))) {
                 apply(prefs, res, tunable);
                 return true;
@@ -34,7 +42,7 @@ public class Tunable {
         return false;
     }
 
-    private static void apply(SharedPreferences prefs, Resources res, Ref tunable) {
+    private void apply(SharedPreferences prefs, Resources res, Ref tunable) {
         String key = res.getString(tunable.settingId);
         TypedValue defaultValue = new TypedValue();
         res.getValue(tunable.defaultId, defaultValue, true);
@@ -43,7 +51,10 @@ public class Tunable {
         tunable.load(prefs, key, defaultValue);
     }
 
-    public static class BooleanRef extends Ref<Boolean> {
+    /**
+     * Referenced setting that holds a boolean.
+     */
+    public class BooleanRef extends Ref<Boolean> {
         public BooleanRef(int settingId, int defaultId) {
             super(settingId, defaultId);
         }
@@ -54,7 +65,10 @@ public class Tunable {
         }
     }
 
-    public static class FloatRef extends Ref<Float> {
+    /**
+     * Referenced setting that holds a floating point number.
+     */
+    public class FloatRef extends Ref<Float> {
         public FloatRef(int settingId, int defaultId) {
             super(settingId, defaultId);
         }
@@ -66,7 +80,10 @@ public class Tunable {
         }
     }
 
-    public static class IntegerRef extends Ref<Integer> {
+    /**
+     * Referenced setting that holds an integer.
+     */
+    public class IntegerRef extends Ref<Integer> {
         public IntegerRef(int settingId, int defaultId) {
             super(settingId, defaultId);
         }
@@ -78,7 +95,10 @@ public class Tunable {
         }
     }
 
-    public static class StringRef extends Ref<String> {
+    /**
+     * Referenced setting that holds a string.
+     */
+    public class StringRef extends Ref<String> {
         public StringRef(int settingId, int entries) {
             super(settingId, entries);
         }
@@ -90,7 +110,7 @@ public class Tunable {
         }
     }
 
-    private abstract static class Ref<T> {
+    private abstract class Ref<T> {
         T value;
         final int settingId;
         final int defaultId;
@@ -98,7 +118,7 @@ public class Tunable {
         Ref(int settingId, int defaultId) {
             this.settingId = settingId;
             this.defaultId = defaultId;
-            sTunables.add(this);
+            mPreferences.add(this);
         }
 
         public T get() {
@@ -108,6 +128,9 @@ public class Tunable {
         abstract void load(SharedPreferences prefs, String key, TypedValue defaultValue);
     }
 
-    private Tunable() {
+    /**
+     * Empty constructor that prevents direct instantiation of this class.
+     */
+    protected GlobalPreferences() {
     }
 }
