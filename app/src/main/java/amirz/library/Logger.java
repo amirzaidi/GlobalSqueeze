@@ -1,6 +1,7 @@
 package amirz.library;
 
 import android.util.Log;
+import android.util.SparseArray;
 
 import amirz.globalsqueeze.BuildConfig;
 
@@ -9,18 +10,24 @@ public class Logger {
             ? Log.ERROR
             : Log.VERBOSE;
 
-    public static void log(String firstMsg) {
-        log(firstMsg, new String[0]);
+    private static final SparseArray<String> sTraceCache = new SparseArray<>();
+
+    public static void log(String msg, Throwable... tr) {
+        String[] trMsg = new String[tr.length];
+        for (int i = 0; i < tr.length; i++) {
+            trMsg[i] = tr[i].toString();
+        }
+        log(msg, trMsg);
     }
 
-    public static void log(String firstMsg, String... additionalMsgs) {
+    private static synchronized void log(String msg, String... tr) {
         String tag = getTag();
-        if (additionalMsgs.length == 0) {
-            Log.println(PRIORITY, tag, firstMsg);
+        if (tr.length == 0) {
+            Log.println(PRIORITY, tag, msg);
         } else {
             StringBuilder builder = new StringBuilder();
-            builder.append(firstMsg);
-            for (String str : additionalMsgs) {
+            builder.append(msg);
+            for (String str : tr) {
                 builder.append(", ");
                 builder.append(str);
             }
@@ -28,26 +35,30 @@ public class Logger {
         }
     }
 
-    public static void log(String firstMsg, Exception... additionalExceptions) {
-        String[] additionalMsgs = new String[additionalExceptions.length];
-        for (int i = 0; i < additionalExceptions.length; i++) {
-            additionalMsgs[i] = additionalExceptions[i].toString();
-        }
-        log(firstMsg, additionalMsgs);
-    }
-
     private static String getTag() {
-        String[] splitLn = Log.getStackTraceString(new Throwable()).split(System.lineSeparator());
-        for (int i = 1; i < splitLn.length; i++) {
-            String line = splitLn[i];
-            line = Strings.trimStart(line.trim(), "at ");
-            line = Strings.before(line, "(");
-            if (!line.isEmpty() && !line.startsWith(Logger.class.getName())) {
-                String[] splitPkg = line.split("\\.");
-                return splitPkg[splitPkg.length - 2];
+        String trace = Log.getStackTraceString(new Throwable());
+
+        int hashCode = trace.hashCode();
+        String className = sTraceCache.get(hashCode);
+        if (className == null) {
+            className = Logger.class.getSimpleName();
+
+            String[] splitLn = trace.split(System.lineSeparator());
+            for (int i = 1; i < splitLn.length; i++) {
+                String line = splitLn[i];
+                line = Strings.trimStart(line.trim(), "at ");
+                line = Strings.before(line, "(");
+                if (!line.isEmpty() && !line.startsWith(Logger.class.getName())) {
+                    String[] splitPkg = line.split("\\.");
+                    className = splitPkg[splitPkg.length - 2];
+                    break;
+                }
             }
+
+            sTraceCache.put(hashCode, className);
         }
-        return Logger.class.getSimpleName();
+
+        return className;
     }
 
     private Logger() {
