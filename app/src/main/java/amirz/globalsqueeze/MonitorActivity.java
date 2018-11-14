@@ -34,13 +34,13 @@ public class MonitorActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        mTracker.setEnabled(true);
+        mTracker.enable();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mTracker.setEnabled(false);
+        mTracker.disable();
     }
 
     @Override

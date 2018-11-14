@@ -70,7 +70,7 @@ public class SqueezeService extends Service
         }, SAMPLES);
 
         // Handle screen lock
-        mLock = new ScreenLock(this, locked -> mTracker.setEnabled(!locked));
+        mLock = new ScreenLock(this, locked -> mTracker.setState(!locked));
 
         SharedPreferences prefs = Utilities.prefs(this);
 
@@ -154,7 +154,7 @@ public class SqueezeService extends Service
 
         mLock.close();
 
-        mTracker.setEnabled(false);
+        mTracker.disable();
         mTracker = null;
 
         super.onDestroy();

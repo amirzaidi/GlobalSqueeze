@@ -6,10 +6,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import amirz.library.BinaryState;
+import amirz.library.state.BinaryState;
 import amirz.library.Logger;
 
-public class MotionTracker extends BinaryState implements SensorEventListener {
+public class MotionTracker extends BinaryState.ChangeHandlerImpl implements SensorEventListener {
     private static final int SPEED = SensorManager.SENSOR_DELAY_FASTEST;
 
     private final SensorManager mSensorManager;
@@ -24,7 +24,7 @@ public class MotionTracker extends BinaryState implements SensorEventListener {
     }
 
     public MotionTracker(Context context, Cb callback, int samples) {
-        super(false);
+        super();
 
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mLinearSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
@@ -34,12 +34,12 @@ public class MotionTracker extends BinaryState implements SensorEventListener {
     }
 
     @Override
-    protected void onEnable() {
+    public void onEnable() {
         mSensorManager.registerListener(this, mLinearSensor, SPEED);
     }
 
     @Override
-    protected void onDisable() {
+    public void onDisable() {
         mSensorManager.unregisterListener(this);
     }
 
